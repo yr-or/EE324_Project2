@@ -69,12 +69,11 @@ public class PathFinderUtils {
 		{
 			hullMap.addPolygon(poly.getHull());
 		}
-		inputMap.draw(Color.BLUE);
-		hullMap.drawFilled(Color.BLUE);
+		hullMap.drawFilled(Color.cyan);
+		inputMap.drawFilled(Color.gray);
 		
 		
 		Point2D sourcePt = inputMap.sourcePoint();
-		int i=0;
 		sourcePt.draw(Color.RED, 0.02);
 		
 		List<Point2D> visiblePoints = new ArrayList<Point2D>();
