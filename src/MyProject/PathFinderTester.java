@@ -1,6 +1,11 @@
 package MyProject;
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
+
+import EE324StandardProjectClasses.Point2D;
+import EE324StandardProjectClasses.Polygon2D;
 import EE324StandardProjectClasses.ShapeMap;
 import edu.princeton.cs.introcs.StdDraw;
 
@@ -9,13 +14,47 @@ import edu.princeton.cs.introcs.StdDraw;
 // of your final path finder solution.
 
 public class PathFinderTester {
-	// Basic test to load and draw a map file
-	public static void main(String args[]) {
+	// Test visibleFrom method
+	public static void main(String[] args) 
+	{
 		StdDraw.setCanvasSize(800, 800);
 		StdDraw.setScale(-0.05, 1.05);
+		StdDraw.clear(Color.DARK_GRAY);
 		ShapeMap inputMap = new ShapeMap("src//MAPS//TEST-MAP-2.TXT");
-		inputMap.draw(Color.BLUE);
-		inputMap.sourcePoint().draw(Color.RED, 0.02);
-		inputMap.destinationPoint().draw(Color.GREEN, 0.02);
+		ShapeMap hullMap = new ShapeMap();
+		for (Polygon2D poly : inputMap)
+		{
+			hullMap.addPolygon(poly.getHull());
+		}
+		hullMap.drawFilled(Color.cyan);
+		inputMap.drawFilled(Color.gray);
+		
+		
+		Point2D sourcePt = inputMap.sourcePoint();
+		Point2D destPt = inputMap.destinationPoint();
+		sourcePt.draw(Color.RED, 0.02);
+		destPt.draw(Color.GREEN, 0.02);
+		
+		List<Point2D> visiblePoints = new ArrayList<Point2D>();
+		
+
+		for (Point2D source : hullMap.getAllPoints())
+		{
+			visiblePoints = PathFinderUtils.visibleFrom(source, hullMap);
+			for (Point2D p : visiblePoints)
+			{
+				source.drawTo(p, Color.orange);
+			}
+		}
+		visiblePoints = PathFinderUtils.visibleFrom(sourcePt, hullMap);
+		for (Point2D p : visiblePoints)
+		{
+			sourcePt.drawTo(p, Color.orange);
+		}
+		visiblePoints = PathFinderUtils.visibleFrom(destPt, hullMap);
+		for (Point2D p : visiblePoints)
+		{
+			destPt.drawTo(p, Color.orange);
+		}
 	}
 }

@@ -15,7 +15,7 @@ public class PathFinderUtils {
 
 	/**
 	 * Exercise 1: Return a list of all points of a ShapeMap that are visible from a specified point p
-	 * @author YOUR NAME
+	 * @author Rory Kilby
 	 * @param p Reference point
 	 * @param map The ShapeMap object
 	 * @return List of all points visible from p
@@ -55,46 +55,4 @@ public class PathFinderUtils {
 		return visiblePoints;
 	}
 
-	public static void main(String[] args) 
-	{
-		StdDraw.setCanvasSize(800, 800);
-		StdDraw.setScale(-0.05, 1.05);
-		StdDraw.clear(Color.DARK_GRAY);
-		ShapeMap inputMap = new ShapeMap("src//MAPS//TEST-MAP-2.TXT");
-		ShapeMap hullMap = new ShapeMap();
-		for (Polygon2D poly : inputMap)
-		{
-			hullMap.addPolygon(poly.getHull());
-		}
-		hullMap.drawFilled(Color.cyan);
-		inputMap.drawFilled(Color.gray);
-		
-		
-		Point2D sourcePt = inputMap.sourcePoint();
-		Point2D destPt = inputMap.destinationPoint();
-		sourcePt.draw(Color.RED, 0.02);
-		destPt.draw(Color.GREEN, 0.02);
-		
-		List<Point2D> visiblePoints = new ArrayList<Point2D>();
-		
-
-		for (Point2D source : hullMap.getAllPoints())
-		{
-			visiblePoints = visibleFrom(source, hullMap);
-			for (Point2D p : visiblePoints)
-			{
-				source.drawTo(p, Color.orange);
-			}
-		}
-		visiblePoints = visibleFrom(sourcePt, hullMap);
-		for (Point2D p : visiblePoints)
-		{
-			sourcePt.drawTo(p, Color.orange);
-		}
-		visiblePoints = visibleFrom(destPt, hullMap);
-		for (Point2D p : visiblePoints)
-		{
-			destPt.drawTo(p, Color.orange);
-		}
-	}
 }
