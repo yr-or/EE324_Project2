@@ -45,10 +45,7 @@ public class PathFinderUtils {
 		{
 			for (Polygon2D poly : map)
 			{
-				if (poly.contains(dst)) {
-					break;
-				}
-				else if (!poly.touches(dst, p) && poly.intersects(dst, p))
+				if (!poly.touches(dst, p) && poly.intersects(dst, p))
 				{
 					visiblePoints.remove(dst);
 				}
@@ -74,7 +71,9 @@ public class PathFinderUtils {
 		
 		
 		Point2D sourcePt = inputMap.sourcePoint();
+		Point2D destPt = inputMap.destinationPoint();
 		sourcePt.draw(Color.RED, 0.02);
+		destPt.draw(Color.GREEN, 0.02);
 		
 		List<Point2D> visiblePoints = new ArrayList<Point2D>();
 		
@@ -91,6 +90,11 @@ public class PathFinderUtils {
 		for (Point2D p : visiblePoints)
 		{
 			sourcePt.drawTo(p, Color.orange);
+		}
+		visiblePoints = visibleFrom(destPt, hullMap);
+		for (Point2D p : visiblePoints)
+		{
+			destPt.drawTo(p, Color.orange);
 		}
 	}
 }
