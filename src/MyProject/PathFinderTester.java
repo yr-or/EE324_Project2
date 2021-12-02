@@ -20,8 +20,8 @@ public class PathFinderTester {
 		StdDraw.setCanvasSize(800, 800);
 		StdDraw.setScale(-0.05, 1.05);
 		StdDraw.clear(Color.DARK_GRAY);
-		ShapeMap inputMap = new ShapeMap("src//MAPS//TEST-MAP-2.TXT");
-		ShapeMap hullMap = new ShapeMap();
+		ShapeMap inputMap = new ShapeMap("src//MAPS//TEST-MAP-1.TXT");
+		ShapeMap hullMap = new ShapeMap(inputMap.sourcePoint(), inputMap.destinationPoint());
 		for (Polygon2D poly : inputMap)
 		{
 			hullMap.addPolygon(poly.getHull());
@@ -45,16 +45,6 @@ public class PathFinderTester {
 			{
 				source.drawTo(p, Color.orange);
 			}
-		}
-		visiblePoints = PathFinderUtils.visibleFrom(sourcePt, hullMap);
-		for (Point2D p : visiblePoints)
-		{
-			sourcePt.drawTo(p, Color.orange);
-		}
-		visiblePoints = PathFinderUtils.visibleFrom(destPt, hullMap);
-		for (Point2D p : visiblePoints)
-		{
-			destPt.drawTo(p, Color.orange);
 		}
 	}
 }

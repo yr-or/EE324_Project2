@@ -9,6 +9,7 @@ import edu.princeton.cs.introcs.StdDraw;
 import java.awt.Color;
 import java.util.List;  
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class PathFinder {
 
@@ -18,54 +19,61 @@ public class PathFinder {
 	// Add any utility methods to PathFinderUtils, or create new classes as needed.
 	// You may delete this comment.
 	
-	public static class Graph 
-	{
-		private List<Vertex> vertices = new ArrayList<Vertex>();
-		public Vertex source;
-		public Vertex dest;
-		
-		public static class Vertex 
+	public static double crossProd(Point2D p0, Point2D p1, Point2D p2) {
+		if (Point2D.collinearMid(new Point2D[]{p0, p1, p2}, 0, 1, 2) != -1)
 		{
-			public Point2D node;
-			public List<Point2D> neighbours;
-			public int weight;
-			
-			public Vertex(Point2D n, List<Point2D> ne, int w) {
-				node = n;
-				neighbours = ne;
-				weight = w;
-			}
+			return 0.0d;
 		}
-		
-		public Graph(ShapeMap map)
-		{
-			// Initialise source node
-			source = new Vertex(map.sourcePoint(), PathFinderUtils.visibleFrom(map.sourcePoint(), map), 0);
-			vertices.add(source);
-			
-			// Initialise all other nodes
-			for (Point2D s : map.getAllPoints())
-			{
-				Vertex v = new Vertex(s, PathFinderUtils.visibleFrom(s, map), 1);
-				vertices.add(v);
-			}
-			
-			// Initialise end node
-			dest = new Vertex(map.destinationPoint(), PathFinderUtils.visibleFrom(map.destinationPoint(), map), 0);
-			vertices.add(dest);
-		}
+		Point2D p0p1 = new Point2D(p1.X()-p0.X(), p1.Y()-p0.Y());
+		Point2D p0p2 = new Point2D(p2.X()-p0.X(), p2.Y()-p0.Y());
+		return (p0p1.X() * p0p2.Y() - p0p1.Y() * p0p2.X());
+	}
 	
-		public void Draw(ShapeMap map)
+	public static LinkedList<Point2D> findPath(ShapeMap map)
+	{
+		StdDraw.setCanvasSize(800, 800);
+		StdDraw.setScale(-0.05, 1.05);
+		StdDraw.clear(Color.DARK_GRAY);
+		map.drawFilled(Color.gray);
+		
+		// Draw line source->dest
+		Point2D source = map.sourcePoint();
+		Point2D dest = map.destinationPoint();
+		source.draw(Color.red, 0.015);
+		dest.draw(Color.red, 0.015);
+		source.drawTo(dest, Color.green);
+		
+		// Draw source lines
+		Point2D s = source;
+		while (!s.equals(dest))
 		{
-			StdDraw.setCanvasSize(800, 800);
-			StdDraw.setScale(-0.05, 1.05);
-			StdDraw.clear(Color.DARK_GRAY);
-			map.drawFilled(Color.GRAY);
-			
-			for (Vertex v : vertices) {
-				v.node.draw(Color.red, 0.02);
+			double min_crossp = 100.0d;
+			Point2D choice = null;
+			for (Point2D p : PathFinderUtils.visibleFrom(s, map))
+			{
+				s.drawTo(p, Color.orange);
+				// Evaluate cross product of each line
+				double cp = crossProd(s, p, dest);
+				System.out.println(cp);
+				if (Math.abs(cp) < min_crossp)
+				{
+					choice = p;
+					min_crossp = cp;
+				}
 			}
+			s.drawTo(choice, Color.red);
+			
+			s = choice;
+			StdDraw.pause(700);
+			
+			// Reset canvas
+			StdDraw.clear(Color.DARK_GRAY);
+			map.drawFilled(Color.gray);
+			source.draw(Color.red, 0.015);
+			dest.draw(Color.red, 0.015);
+			source.drawTo(dest, Color.green);
 		}
+		return null;
 	}
 	
 	public static void main(String[] args)
@@ -76,10 +84,8 @@ public class PathFinder {
 		{
 			hullMap.addPolygon(poly.getHull());
 		}
-		Graph visGraph = new Graph(hullMap);
-		visGraph.Draw(hullMap);
 		
-		
+		findPath(hullMap);
 	}
 
 }

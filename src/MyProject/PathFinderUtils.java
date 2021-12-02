@@ -23,6 +23,9 @@ public class PathFinderUtils {
 	public static List<Point2D> visibleFrom(Point2D p, ShapeMap map) 
 	{
 		List<Point2D> visiblePoints = map.getAllPoints();
+		// Add source and destination points
+		visiblePoints.add(map.sourcePoint());
+		visiblePoints.add(map.destinationPoint());
 		
 		// Test if points intersect their own polygon
 		for (Polygon2D poly : map)
@@ -33,7 +36,6 @@ public class PathFinderUtils {
 				if (!poly.touches(p, dst))
 				{
 					visiblePoints.remove(dst);
-					
 				}
 			}
 		}
@@ -51,6 +53,7 @@ public class PathFinderUtils {
 				}
 			}
 		}
+		
 		
 		return visiblePoints;
 	}
