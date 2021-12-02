@@ -20,7 +20,7 @@ public class PathFinderTester {
 		StdDraw.setCanvasSize(800, 800);
 		StdDraw.setScale(-0.05, 1.05);
 		StdDraw.clear(Color.DARK_GRAY);
-		ShapeMap inputMap = new ShapeMap("src//MAPS//TEST-MAP-1.TXT");
+		ShapeMap inputMap = new ShapeMap("src//MAPS//TEST-MAP-2.TXT");
 		ShapeMap hullMap = new ShapeMap(inputMap.sourcePoint(), inputMap.destinationPoint());
 		for (Polygon2D poly : inputMap)
 		{
