@@ -47,16 +47,16 @@ public class PathFinder {
 		
 		Point2D s = source;
 		Point2D prev_choice = null;
-		// Maintain reference to previous points
-		List<Point2D> prev_visible = null;
+		List<Point2D> prevPoints = new ArrayList<Point2D>();
 		
-		while (!s.equals(dest))
+		while (!s.isEqual(dest))
 		{
 			// Sort by angle
 			List<Point2D> visiblePoints = PathFinderUtils.visibleFrom(s, map);
 			List<Point2D> sortedPoints = new ArrayList<Point2D>(visiblePoints);
 			
 			// Sort points by angle
+			/*
 			for (int j=0; j<sortedPoints.size()-1; j++)
 			{
 				for (int i=0; i<sortedPoints.size()-1-j; i++)
@@ -69,15 +69,33 @@ public class PathFinder {
 					}
 				}
 			}
+			*/
 			
+			// Find closest angle point
+			Point2D min = null;
+			double min_val = 100.0;
 			for (Point2D p : sortedPoints)
 			{
+				Point2D sp_unit = new Point2D((p.X()-s.X())/p.distanceTo(s), (p.Y()-s.Y())/p.distanceTo(s));
+				Point2D sd_unit = new Point2D((dest.X()-s.X())/dest.distanceTo(s), (dest.Y()-s.Y())/dest.distanceTo(s));
 				s.drawTo(p, Color.orange);
-				StdDraw.pause(500);
-				double val = Math.abs(crossProd(s, p, dest));
-				System.out.println(val);
+				//StdDraw.pause(200);
+				
+				double val = Math.abs(crossProd(s, sp_unit, sd_unit));
+				if (val < min_val && !prevPoints.contains(p)) {
+					min_val = val;
+					min = p;
+				}
 			}
+			// Draw chosen point
+			s.drawTo(min, Color.red);
+			// Update points
+			prevPoints = sortedPoints;
+			prevPoints.add(s);
+			s = min;
+			path.add(s);
 			
+			//StdDraw.pause(500);
 			
 			// Reset canvas
 			StdDraw.clear(Color.DARK_GRAY);
@@ -86,12 +104,18 @@ public class PathFinder {
 			dest.draw(Color.red, 0.015);
 			source.drawTo(dest, Color.green);
 		}
+		
+		for (int i=0; i<path.size()-1; i++)
+		{
+			path.get(i).drawTo(path.get(i+1), Color.red);
+		}
+		
 		return path;
 	}
 	
 	public static void main(String[] args)
 	{
-		ShapeMap inputMap = new ShapeMap("src//MAPS//DEMO-MAP-2.TXT");
+		ShapeMap inputMap = new ShapeMap("src//MAPS//DEMO-MAP-3.TXT");
 		ShapeMap hullMap = new ShapeMap(inputMap.sourcePoint(), inputMap.destinationPoint());
 		for (Polygon2D poly : inputMap)
 		{
