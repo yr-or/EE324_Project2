@@ -41,6 +41,44 @@ public class PathFinder {
 		return (a0a1.X()*b0b1.X() + a0a1.Y()*b0b1.Y());
 	}
 	
+	
+	public static double weight(double dp, Point2D s, Point2D p, Point2D source, Point2D dest, ShapeMap map)
+	{
+		Double max_val = -100.0d;
+		for (Point2D p2 : PathFinderUtils.visibleFrom(p, map))
+		{
+			if (p2.isEqual(dest)) {
+				max_val = 100.0d;
+				break;
+			}
+			Double val = weight(dotProd(p, p2, source, dest), p, p2, source, dest);
+			if (val > max_val) 
+			{
+				max_val = val;
+			}
+		}
+		return max_val + weight(dp, s, p, source, dest);
+	}
+	
+	public static double weight(double dp, Point2D s, Point2D p, Point2D source, Point2D dest)
+	{
+		// calculate distance traveled along source->dest
+				Double score = dp;
+				if (dest.Y() > source.Y() && p.Y() > dest.Y()) 
+				{
+					score = score - (p.Y()-dest.Y());
+				}
+				if (dest.Y() < source.Y() && p.Y() < dest.Y()) 
+				{
+					score = score - (dest.Y()-p.Y());
+				}
+				double distance = s.distanceTo(p);
+				// Calculate distance ratio
+				score = score / s.distanceTo(p);
+
+				return score;
+	}
+	
 	public static List<Point2D> findPath(ShapeMap map)
 	{
 		List<Point2D> path = new ArrayList<Point2D>();
@@ -85,8 +123,8 @@ public class PathFinder {
 			*/
 			
 			// Find closest angle point
-			Point2D choice = null;
-			double max_val = 0.0;
+			Point2D choice = sortedPoints.get(0);
+			double max_val = -100.0;
 			double weight = 0.0d;
 			for (Point2D p : sortedPoints)
 			{
@@ -94,28 +132,16 @@ public class PathFinder {
 				//StdDraw.pause(200);
 				
 				double dp = dotProd(s, p, source, dest);
-				System.out.println(dp);
-				// Decide weight of path p
-				if (dest.Y() >= source.Y()) {
-					if (p.Y() > dest.Y()) {
-						weight = dp-(p.Y()-dest.Y());
-					}else {
-						weight = dp;
-					}
-				}
-				else if (source.Y() < dest.Y()){
-					if (p.Y() < dest.Y()) {
-						weight = dp-(dest.Y()-p.Y());
-					}else {
-						weight = dp;
-					}
-				}
+				
+				weight = weight(dp, s, p, source, dest, map);
+				System.out.println("dot product: " + dp);
+				System.out.println("weighting: " + weight);
 				
 				if (p.isEqual(dest)) {
 					choice = p;
 					break;
 				}
-				else if (weight > max_val && !prevPoints.contains(p)) {
+				else if (weight > max_val) {
 					max_val = weight;
 					choice = p;
 				}
@@ -148,7 +174,7 @@ public class PathFinder {
 	
 	public static void main(String[] args)
 	{
-		ShapeMap inputMap = new ShapeMap("src//MAPS//TEST-MAP-0.TXT");
+		ShapeMap inputMap = new ShapeMap("src//MAPS//DEMO-MAP-3.TXT");
 		ShapeMap hullMap = new ShapeMap(inputMap.sourcePoint(), inputMap.destinationPoint());
 		for (Polygon2D poly : inputMap)
 		{
