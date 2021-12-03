@@ -24,8 +24,10 @@ public class PathFinderUtils {
 	{
 		List<Point2D> visiblePoints = map.getAllPoints();
 		// Add source and destination points
-		visiblePoints.add(map.sourcePoint());
-		visiblePoints.add(map.destinationPoint());
+		Point2D source = map.sourcePoint();
+		Point2D dest = map.sourcePoint();
+		if (!p.isEqual(source)) visiblePoints.add(map.sourcePoint());
+		if (!p.isEqual(dest)) visiblePoints.add(map.destinationPoint());
 		
 		// Test if points intersect their own polygon
 		for (Polygon2D poly : map)
