@@ -30,8 +30,19 @@ public class PathFinder {
 	
 	public static double dotProd(Point2D p0, Point2D p1, Point2D p2) {
 		Point2D p0p1 = new Point2D(p1.X()-p0.X(), p1.Y()-p0.Y());
+		System.out.println("Vector sp = " + p0p1.X() + ", " + p0p1.Y());
 		Point2D p0p2 = new Point2D(p2.X()-p0.X(), p2.Y()-p0.Y());
+		System.out.println("Vector sd = " + p0p2.X() + ", " + p0p2.Y());
 		return (p0p1.X()*p0p2.X() + p0p1.Y()*p0p2.Y());
+	}
+	
+	public static double dotProd(Point2D a0, Point2D a1, Point2D b0, Point2D b1) {
+		// move lines to origin
+		Point2D a0a1 = new Point2D(a1.X()-a0.X(), a1.Y()-a0.Y());
+		System.out.println("Vector sp === " + a0a1.X() + ", " + a0a1.Y());
+		Point2D b0b1 = new Point2D(b1.X()-b0.X(), b1.Y()-b0.Y());
+		System.out.println("Vector sd === " + b0b1.X() + ", " + b0b1.Y());
+		return (a0a1.X()*b0b1.X() + a0a1.Y()*b0b1.Y());
 	}
 	
 	public static List<Point2D> findPath(ShapeMap map)
@@ -80,19 +91,34 @@ public class PathFinder {
 			// Find closest angle point
 			Point2D choice = null;
 			double max_val = 0.0;
+			double weight = 0.0d;
 			for (Point2D p : sortedPoints)
 			{
 				s.drawTo(p, Color.orange);
-				StdDraw.pause(200);
+				//StdDraw.pause(200);
 				
-				double val = dotProd(s, p, dest);
-				System.out.println(val);
+				double dp = dotProd(s, p, source, dest);
+				System.out.println(dp);
+				// Decide weight of path p
+				if (dest.Y() > source.Y()) {
+					if (p.Y() > dest.Y()) {
+						weight = dp-(p.Y()-dest.Y());
+					}
+				}
+				else if (source.Y() < dest.Y()){
+					if (p.Y() < dest.Y()) {
+						weight = dp-(dest.Y()-p.Y());
+					}
+				}
+				else {
+					weight = dp;
+				}
 				if (p.isEqual(dest)) {
 					choice = p;
 					break;
 				}
-				else if (val > max_val && !prevPoints.contains(p)) {
-					max_val = val;
+				else if (weight > max_val && !prevPoints.contains(p)) {
+					max_val = weight;
 					choice = p;
 				}
 			}
@@ -104,7 +130,7 @@ public class PathFinder {
 			s = choice;
 			path.add(s);
 			
-			StdDraw.pause(500);
+			StdDraw.pause(200);
 			
 			// Reset canvas
 			StdDraw.clear(Color.DARK_GRAY);
