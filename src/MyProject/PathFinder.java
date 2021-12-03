@@ -45,36 +45,39 @@ public class PathFinder {
 		source.drawTo(dest, Color.green);
 		path.add(source);
 		
-		// Draw source lines
 		Point2D s = source;
-		Point2D prev = null;
+		Point2D prev_choice = null;
+		// Maintain reference to previous points
+		List<Point2D> prev_visible = null;
+		
 		while (!s.equals(dest))
 		{
-			double min_crossp = 100.0d;
-			Point2D choice = null;
-			for (Point2D p : PathFinderUtils.visibleFrom(s, map))
+			// Sort by angle
+			List<Point2D> visiblePoints = PathFinderUtils.visibleFrom(s, map);
+			List<Point2D> sortedPoints = new ArrayList<Point2D>(visiblePoints);
+			
+			// Sort points by angle
+			for (int j=0; j<sortedPoints.size()-1; j++)
 			{
-				s.drawTo(p, Color.orange);
-				// Evaluate cross product of each line
-				double cp = crossProd(s, p, dest);
-				System.out.println(cp);
-				if (p == dest) {
-					choice = dest;
-					break;
-				}
-				else if (Math.abs(cp) < min_crossp && p != prev)
+				for (int i=0; i<sortedPoints.size()-1-j; i++)
 				{
-					choice = p;
-					min_crossp = cp;
+					if (crossProd(s, sortedPoints.get(i), sortedPoints.get(i+1)) > 0)
+					{
+						Point2D tmp = sortedPoints.get(i);
+						sortedPoints.set(i, sortedPoints.get(i+1));
+						sortedPoints.set(i+1, tmp);
+					}
 				}
 			}
-			path.add(choice);
-			s.drawTo(choice, Color.red);
 			
-			// Update path choice
-			prev = s;
-			s = choice;
-			StdDraw.pause(700);
+			for (Point2D p : sortedPoints)
+			{
+				s.drawTo(p, Color.orange);
+				StdDraw.pause(500);
+				double val = Math.abs(crossProd(s, p, dest));
+				System.out.println(val);
+			}
+			
 			
 			// Reset canvas
 			StdDraw.clear(Color.DARK_GRAY);
@@ -88,7 +91,7 @@ public class PathFinder {
 	
 	public static void main(String[] args)
 	{
-		ShapeMap inputMap = new ShapeMap("src//MAPS//TEST-MAP-2.TXT");
+		ShapeMap inputMap = new ShapeMap("src//MAPS//DEMO-MAP-2.TXT");
 		ShapeMap hullMap = new ShapeMap(inputMap.sourcePoint(), inputMap.destinationPoint());
 		for (Polygon2D poly : inputMap)
 		{
