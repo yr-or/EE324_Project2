@@ -28,6 +28,12 @@ public class PathFinder {
 		return (p0p1.X() * p0p2.Y() - p0p1.Y() * p0p2.X());
 	}
 	
+	public static double dotProd(Point2D p0, Point2D p1, Point2D p2) {
+		Point2D p0p1 = new Point2D(p1.X()-p0.X(), p1.Y()-p0.Y());
+		Point2D p0p2 = new Point2D(p2.X()-p0.X(), p2.Y()-p0.Y());
+		return (p0p1.X()*p0p2.X() + p0p1.Y()*p0p2.Y());
+	}
+	
 	public static List<Point2D> findPath(ShapeMap map)
 	{
 		List<Point2D> path = new ArrayList<Point2D>();
@@ -72,30 +78,33 @@ public class PathFinder {
 			*/
 			
 			// Find closest angle point
-			Point2D min = null;
-			double min_val = 100.0;
+			Point2D choice = null;
+			double max_val = 0.0;
 			for (Point2D p : sortedPoints)
 			{
-				Point2D sp_unit = new Point2D((p.X()-s.X())/p.distanceTo(s), (p.Y()-s.Y())/p.distanceTo(s));
-				Point2D sd_unit = new Point2D((dest.X()-s.X())/dest.distanceTo(s), (dest.Y()-s.Y())/dest.distanceTo(s));
 				s.drawTo(p, Color.orange);
-				//StdDraw.pause(200);
+				StdDraw.pause(200);
 				
-				double val = Math.abs(crossProd(s, sp_unit, sd_unit));
-				if (val < min_val && !prevPoints.contains(p)) {
-					min_val = val;
-					min = p;
+				double val = dotProd(s, p, dest);
+				System.out.println(val);
+				if (p.isEqual(dest)) {
+					choice = p;
+					break;
+				}
+				else if (val > max_val && !prevPoints.contains(p)) {
+					max_val = val;
+					choice = p;
 				}
 			}
 			// Draw chosen point
-			s.drawTo(min, Color.red);
+			s.drawTo(choice, Color.red);
 			// Update points
 			prevPoints = sortedPoints;
 			prevPoints.add(s);
-			s = min;
+			s = choice;
 			path.add(s);
 			
-			//StdDraw.pause(500);
+			StdDraw.pause(500);
 			
 			// Reset canvas
 			StdDraw.clear(Color.DARK_GRAY);
