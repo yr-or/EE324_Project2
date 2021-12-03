@@ -30,18 +30,14 @@ public class PathFinder {
 	
 	public static double dotProd(Point2D p0, Point2D p1, Point2D p2) {
 		Point2D p0p1 = new Point2D(p1.X()-p0.X(), p1.Y()-p0.Y());
-		System.out.println("Vector sp = " + p0p1.X() + ", " + p0p1.Y());
 		Point2D p0p2 = new Point2D(p2.X()-p0.X(), p2.Y()-p0.Y());
-		System.out.println("Vector sd = " + p0p2.X() + ", " + p0p2.Y());
 		return (p0p1.X()*p0p2.X() + p0p1.Y()*p0p2.Y());
 	}
 	
 	public static double dotProd(Point2D a0, Point2D a1, Point2D b0, Point2D b1) {
 		// move lines to origin
 		Point2D a0a1 = new Point2D(a1.X()-a0.X(), a1.Y()-a0.Y());
-		System.out.println("Vector sp === " + a0a1.X() + ", " + a0a1.Y());
 		Point2D b0b1 = new Point2D(b1.X()-b0.X(), b1.Y()-b0.Y());
-		System.out.println("Vector sd === " + b0b1.X() + ", " + b0b1.Y());
 		return (a0a1.X()*b0b1.X() + a0a1.Y()*b0b1.Y());
 	}
 	
@@ -100,19 +96,21 @@ public class PathFinder {
 				double dp = dotProd(s, p, source, dest);
 				System.out.println(dp);
 				// Decide weight of path p
-				if (dest.Y() > source.Y()) {
+				if (dest.Y() >= source.Y()) {
 					if (p.Y() > dest.Y()) {
 						weight = dp-(p.Y()-dest.Y());
+					}else {
+						weight = dp;
 					}
 				}
 				else if (source.Y() < dest.Y()){
 					if (p.Y() < dest.Y()) {
 						weight = dp-(dest.Y()-p.Y());
+					}else {
+						weight = dp;
 					}
 				}
-				else {
-					weight = dp;
-				}
+				
 				if (p.isEqual(dest)) {
 					choice = p;
 					break;
@@ -150,7 +148,7 @@ public class PathFinder {
 	
 	public static void main(String[] args)
 	{
-		ShapeMap inputMap = new ShapeMap("src//MAPS//DEMO-MAP-3.TXT");
+		ShapeMap inputMap = new ShapeMap("src//MAPS//TEST-MAP-0.TXT");
 		ShapeMap hullMap = new ShapeMap(inputMap.sourcePoint(), inputMap.destinationPoint());
 		for (Polygon2D poly : inputMap)
 		{
